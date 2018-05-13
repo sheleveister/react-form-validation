@@ -89,20 +89,31 @@ class App extends Component {
     if (this.state.formIsValid) {
       console.log('Send data');
     }
+
+    if (!this.state.formIsValid) {
+      let formElements = { ...this.state.orderForm };
+
+      Object.keys(formElements).map((key) => {
+        formElements[key].valid = this.checkValidity(formElements[key].value, formElements[key].validation);
+        formElements[key].touched = true;
+      });
+      this.setState({orderForm: formElements});
+    }
   };
 
   render() {
     let formElementsArray = [];
-    for (let key in this.state.orderForm) {
+
+    Object.keys(this.state.orderForm).map((key) => {
       formElementsArray.push({
         id: key,
         config: this.state.orderForm[key]
       })
-    }
+    });
 
     return (
       <div className="app-content">
-        <form className="app" onClick={(event) => this.handleSubmit(event)}>
+        <form className="app">
           {formElementsArray.map((formElement) => {
             return <CustomInput
               key={formElement.id}
@@ -117,7 +128,9 @@ class App extends Component {
               value={formElement.config.value}
             />
           })}
-          <button>Send</button>
+          <button onClick={(event) => this.handleSubmit(event)}>
+            Send
+          </button>
         </form>
       </div>
     );

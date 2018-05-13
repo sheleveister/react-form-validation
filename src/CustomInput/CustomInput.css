@@ -1,0 +1,15 @@
+.app-input {
+  padding: 5px 10px;
+  font-size: 14px;
+  width: 190px;
+  outline: none;
+}
+
+.app-input--invalid {
+  border: 1px solid crimson;
+}
+
+.validation-error {
+  padding: 5px 0;
+  color: crimson;
+}

@@ -9,28 +9,58 @@ class App extends Component {
 
     this.state = {
       orderForm: {
-        value: '',
-        label: 'Name',
-        validation: {
-          required: true
+        firstName: {
+          value: '',
+          elementType: 'input',
+          type: 'text',
+          label: 'Firs Name',
+          validation: {
+            required: true
+          },
+          valid: false,
+          touched: false
         },
-        valid: false,
-        touched: false
+        lastName: {
+          value: '',
+          elementType: 'input',
+          type: 'text',
+          label: 'Last Name',
+          validation: {
+            required: true
+          },
+          valid: false,
+          touched: false
+        },
+        email: {
+          value: '',
+          elementType: 'input',
+          type: 'email',
+          label: 'Email',
+          validation: {
+            required: true,
+            isEmail:  true
+          },
+          valid: false,
+          touched: false
+        }
       },
       formIsValid: false
     }
   }
 
-  handleChanges = (event) => {
+  handleChanges = (event, formElementIdentifier) => {
     const updatedOrderForm = {
       ...this.state.orderForm,
-      value: event.target.value,
-      valid: this.checkValidity(event.target.value, this.state.orderForm.validation),
-      touched: true
+      [formElementIdentifier]: {
+        ...this.state.orderForm[formElementIdentifier],
+        value: event.target.value,
+        valid: this.checkValidity(event.target.value, this.state.orderForm[formElementIdentifier].validation),
+        touched: true
+      }
     };
 
     let formIsValid = true;
-    formIsValid = updatedOrderForm.valid && formIsValid;
+    formIsValid = updatedOrderForm[formElementIdentifier].valid && formIsValid;
 
     this.setState({orderForm: updatedOrderForm, formIsValid: formIsValid});
     console.log(updatedOrderForm, formIsValid);
@@ -46,6 +76,10 @@ class App extends Component {
     if (validationRules.required) {
       isValid = value.trim() !== '';
     }
+    if (validationRules.isEmail) {
+      const pattern = /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/;
+      isValid = pattern.test(value);
+    }
     return isValid;
   };
 
@@ -55,31 +89,32 @@ class App extends Component {
     if (this.state.formIsValid) {
       console.log('Send data');
     }
-
-    console.log(event);
-    if (event && !this.state.formIsValid) {
-      console.log('no valid form');
-      console.log(this.state);
-    }
-
   };
 
   render() {
-    let formElementsArray = [
-      { ...this.state.orderForm }
-    ];
+    let formElementsArray = [];
+    for (let key in this.state.orderForm) {
+      formElementsArray.push({
+        id: key,
+        config: this.state.orderForm[key]
+      })
+    }
 
     return (
       <div className="app-content">
         <form className="app" onClick={(event) => this.handleSubmit(event)}>
-          {formElementsArray.map((formElement, i) => {
+          {formElementsArray.map((formElement) => {
             return <CustomInput
-              key={i}
+              key={formElement.id}
+              name={formElement.config.name}
+              type={formElement.config.type}
+              label={formElement.config.label}
+              elementType={formElement.config.elementType}
               change={(event) => this.handleChanges(event, formElement.id)}
-              invalid={!formElement.valid}
-              touched={formElement.touched}
-              shouldValidate={formElement.validation.required}
-              value={formElement.value}
+              invalid={!formElement.config.valid}
+              touched={formElement.config.touched}
+              shouldValidate={formElement.config.validation.required}
+              value={formElement.config.value}
             />
           })}
           <button>Send</button>

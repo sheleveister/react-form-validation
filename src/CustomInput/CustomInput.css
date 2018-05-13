@@ -13,3 +13,15 @@
   padding: 5px 0;
   color: crimson;
 }
+
+.app-input-group {
+  display: flex;
+  flex-direction: column;
+}
+
+label {
+  font-weight: 700;
+  font-size: 14px;
+  color: #202020;
+  margin: 20px 0 5px 2px;
+}
